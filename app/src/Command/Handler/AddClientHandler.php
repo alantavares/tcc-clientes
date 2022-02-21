@@ -22,6 +22,7 @@ class AddClientHandler implements MessageHandlerInterface
     public function __invoke(AddClient $command)
     {
 
+        $id = $command->getId();
         $name = $command->getName();
         $email = $command->getEmail();
         $phone = $command->getPhone();
@@ -30,7 +31,7 @@ class AddClientHandler implements MessageHandlerInterface
         //     throw new \LogicException("Client with email has to be unique");
         // }
 
-        $client = new Client($name, $email, $phone);
+        $client = new Client($id, $name, $email, $phone);
 
         $this->em->persist($client);
 
