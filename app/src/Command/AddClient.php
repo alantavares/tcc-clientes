@@ -39,7 +39,12 @@ class AddClient implements JsonSerializable
     }
 
     public function jsonSerialize() {
-        return ['id'=>$this->id, 'name'=>$this->name, 'email' => $this->email, 'phone'=>$this->phone];
+        return [
+            'id'=>$this->id, 
+            'name'=>$this->name, 
+            'email' => $this->email, 
+            'phone'=>$this->phone
+        ];
     }
 
 }
