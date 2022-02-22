@@ -1,4 +1,4 @@
-project_name                       = "tcc-clientes"
+project_name                       = "clientes"
 cluster_name                       = "clientes"
 aws_region                         = "us-east-1"
 repository_name                    = "clientes"
