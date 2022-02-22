@@ -10,7 +10,6 @@ data "template_file" "app_task" {
     desired_app_task_cpu          = var.desired_app_task_cpu
     desired_app_task_memory       = var.desired_app_task_memory
     log_group                     = aws_cloudwatch_log_group.app_log_group.name
-    datadog_api_key               = var.datadog_api_key
   }
 }
 

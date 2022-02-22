@@ -98,7 +98,3 @@ variable "memory_to_scale_up" {
 variable "memory_to_scale_down" {
   description = ""
 }
-
-variable "datadog_api_key" {
-
-}

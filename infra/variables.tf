@@ -49,7 +49,3 @@ variable "subnet1_private" {
 variable "subnet2_private" {
   description = "Available subnet for NLB and ECS Cluster"
 }
-
-variable "datadog_api_key" {
-  description = "Datadog API Key"
-}

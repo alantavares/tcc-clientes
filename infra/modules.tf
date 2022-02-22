@@ -18,7 +18,6 @@ module "ecs" {
   cpu_to_scale_down             = local.workspace["cpu_to_scale_down"]
   memory_to_scale_up            = local.workspace["memory_to_scale_up"]
   memory_to_scale_down          = local.workspace["memory_to_scale_down"]
-  datadog_api_key               = var.datadog_api_key
 
   subnet1_private               = var.subnet1_private
   subnet2_private               = var.subnet2_private
