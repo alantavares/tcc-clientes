@@ -41,7 +41,7 @@ jobs:
       - name: Terraform validation
         run: |
           cd infra
-          terraform validate -var-file=terraform.tfvars
+          terraform validate
 
       - name: Terraform apply
         env:
