@@ -34,8 +34,7 @@ data "aws_iam_policy_document" "ecs_service_policy" {
       "elasticloadbalancing:RegisterInstancesWithLoadBalancer",
       "ec2:Describe*",
       "ec2:AuthorizeSecurityGroupIngress",
-      "s3:*",
-      "sqs:*"
+      "s3:*"
     ]
   }
 }

@@ -6,7 +6,6 @@ resource "aws_appautoscaling_target" "app_scale_target" {
 
   max_capacity = var.max_tasks
   min_capacity = var.min_tasks
-  depends_on = [ aws_ecs_cluster.cluster, aws_ecs_service.web-api ]
 }
 
 resource "aws_cloudwatch_metric_alarm" "cpu_utilization_high" {
@@ -16,26 +15,8 @@ resource "aws_cloudwatch_metric_alarm" "cpu_utilization_high" {
   metric_name         = "CPUUtilization"
   namespace           = "AWS/ECS"
   period              = "60"
-  statistic           = "Average"
+  statistic           = "Maximum"
   threshold           = var.cpu_to_scale_up
-
-  dimensions = {
-    ClusterName = aws_ecs_cluster.cluster.name
-    ServiceName = aws_ecs_service.web-api.name
-  }
-
-  alarm_actions = [aws_appautoscaling_policy.app_up.arn]
-}
-
-resource "aws_cloudwatch_metric_alarm" "memory_utilization_high" {
-  alarm_name          = "${var.cluster_name}-Memory-Utilization-High"
-  comparison_operator = "GreaterThanOrEqualToThreshold"
-  evaluation_periods  = "1"
-  metric_name         = "MemoryUtilization"
-  namespace           = "AWS/ECS"
-  period              = "60"
-  statistic           = "Average"
-  threshold           = var.memory_to_scale_up
 
   dimensions = {
     ClusterName = aws_ecs_cluster.cluster.name
@@ -54,7 +35,7 @@ resource "aws_appautoscaling_policy" "app_up" {
   step_scaling_policy_configuration {
     adjustment_type         = "ChangeInCapacity"
     cooldown                = 60
-    metric_aggregation_type = "Average"
+    metric_aggregation_type = "Maximum"
 
     step_adjustment {
       metric_interval_lower_bound = 0
@@ -72,24 +53,6 @@ resource "aws_cloudwatch_metric_alarm" "cpu_utilization_low" {
   period              = "60"
   statistic           = "Average"
   threshold           = var.cpu_to_scale_down
-
-  dimensions = {
-    ClusterName = aws_ecs_cluster.cluster.name
-    ServiceName = aws_ecs_service.web-api.name
-  }
-
-  alarm_actions = [aws_appautoscaling_policy.app_down.arn]
-}
-
-resource "aws_cloudwatch_metric_alarm" "memory_utilization_low" {
-  alarm_name          = "${var.cluster_name}-Memory-Utilization-Low"
-  comparison_operator = "LessThanThreshold"
-  evaluation_periods  = "1"
-  metric_name         = "MemoryUtilization"
-  namespace           = "AWS/ECS"
-  period              = "60"
-  statistic           = "Average"
-  threshold           = var.memory_to_scale_down
 
   dimensions = {
     ClusterName = aws_ecs_cluster.cluster.name

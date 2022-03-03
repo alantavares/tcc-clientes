@@ -1,7 +1,7 @@
 [
   {
     "name": "${container_name}",
-    "image": "${image}:latest",
+    "image": "${image}",
     "portMappings": [
       {
         "containerPort": ${container_port},
@@ -16,10 +16,42 @@
       "logDriver": "awslogs",
       "options": {
         "awslogs-group": "${log_group}",
-        "awslogs-region": "${aws_region}",
+        "awslogs-region": ${aws_region},
         "awslogs-stream-prefix": "${container_name}"
       }
     },
     "environment": []
+  },
+  {
+    "volumesFrom": [
+      {
+        "sourceContainer": "${container_name}"
+      }
+    ],
+    "name": "${webserver_container_name}",
+    "image": "${webserver_image}",
+    "portMappings": [
+      {
+        "containerPort": ${webserver_container_port},
+        "hostPort": ${webserver_container_port},
+        "protocol": "tcp"
+      }
+    ],
+    "cpu": ${desired_webserver_task_cpu},
+    "memory": ${desired_webserver_task_memory},
+    "essential": false,
+    "logConfiguration": {
+      "logDriver": "awslogs",
+      "options": {
+        "awslogs-group": "${log_group}",
+        "awslogs-region": ${aws_region},
+        "awslogs-stream-prefix": "${webserver_container_name}"
+      }
+    },
+    "environment": [],
+    "dependsOn": [
+      {"containerName": "${container_name}",
+       "condition": "START"}
+    ]
   }
 ]

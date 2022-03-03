@@ -1,6 +1,6 @@
 # App Security Group
 resource "aws_security_group" "app_sg" {
-  name        = "${var.cluster_name}-sg"
+  name_prefix = "${var.cluster_name}-sg"
   description = "Default security group to allow inbound/outbound from the VPC"
   vpc_id      = var.vpc_id
 
@@ -23,27 +23,27 @@ resource "aws_security_group" "app_sg" {
   }
 }
 
-resource "aws_security_group" "nlb_sg" {
-  name        = "nlb-${var.cluster_name}-sg"
-  description = "NLB Security Group"
+# ALB Security Group
+resource "aws_security_group" "alb_sg" {
+  name_prefix = "alb-${var.cluster_name}-sg"
+  description = "ALB Security Group"
   vpc_id      = var.vpc_id
 
-  ingress {
-    from_port   = var.container_port
-    to_port     = var.container_port
+    ingress {
+    from_port   = 443
+    to_port     = 443
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
-    description = "Acesso TCP ao container"
+    description = "Acesso internet"
   }
 
 
-
-  ingress {
+    ingress {
     from_port   = 80
     to_port     = 80
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
-    description = "Acesso TCP ao container"
+    description = "Acesso internet"
   }
 
   ingress {
@@ -61,7 +61,7 @@ resource "aws_security_group" "nlb_sg" {
   }
 
   tags = {
-    Name = "${var.cluster_name}-nlb-sg"
+    Name = "${var.cluster_name}-alb-sg"
   }
 }
 
@@ -69,7 +69,7 @@ resource "aws_security_group" "nlb_sg" {
 # ECS Cluster Security Group
 resource "aws_security_group" "ecs_sg" {
   vpc_id      = var.vpc_id
-  name        = "ecs-service-${var.cluster_name}-sg"
+  name_prefix = "ecs-service-${var.cluster_name}-sg"
   description = "Allow egress from container"
 
   egress {
