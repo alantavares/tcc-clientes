@@ -5,7 +5,6 @@ module "ecs" {
   cluster_name                  = "${var.cluster_name}-${terraform.workspace}"
   app_repository_name           = "${var.app_repository_name}-${terraform.workspace}"
   webserver_repository_name     = "${var.webserver_repository_name}-${terraform.workspace}"
-  worker_consumer_name          = "${var.worker_consumer_name}-${terraform.workspace}"
   bucket_name                   = "${var.bucket_name}-${terraform.workspace}"
   service_migration_name        = "${var.service_migration_name}-${terraform.workspace}"
   container_name                = var.container_name
@@ -25,26 +24,11 @@ module "ecs" {
   cpu_to_scale_up               = local.workspace["cpu_to_scale_up"]
   cpu_to_scale_down             = local.workspace["cpu_to_scale_down"]
 
-  worker_consumer_desired_tasks                 = local.workspace["worker_consumer_desired_tasks"]
-  worker_consumer_max_tasks                     = local.workspace["worker_consumer_max_tasks"]
-  worker_consumer_min_tasks                     = local.workspace["worker_consumer_min_tasks"]
-  worker_consumer_desired_task_cpu              = local.workspace["worker_consumer_desired_task_cpu"]
-  worker_consumer_desired_webserver_task_cpu    = local.workspace["worker_consumer_desired_webserver_task_cpu"]
-  worker_consumer_desired_app_task_cpu          = local.workspace["worker_consumer_desired_app_task_cpu"]
-  worker_consumer_desired_task_memory           = local.workspace["worker_consumer_desired_task_memory"]
-  worker_consumer_desired_webserver_task_memory = local.workspace["worker_consumer_desired_webserver_task_memory"]
-  worker_consumer_desired_app_task_memory       = local.workspace["worker_consumer_desired_app_task_memory"]
-  worker_consumer_cpu_to_scale_up               = local.workspace["worker_consumer_cpu_to_scale_up"]
-  worker_consumer_cpu_to_scale_down             = local.workspace["worker_consumer_cpu_to_scale_down"]
-  worker_consumer_deploy_cmd                    = var.worker_consumer_deploy_cmd
-
   subnet_alb_1                  = var.subnet_alb_1
   subnet_alb_2                  = var.subnet_alb_2
   alb_port                      = var.alb_port
   container_port                = var.container_port
   webserver_container_port      = var.webserver_container_port
-  worker_consumer_container_port = var.worker_consumer_container_port
-  worker_consumer_container_name = var.worker_consumer_container_name
   arn_certificado               = var.arn_certificado
   aws_region                    = var.aws_region  
   availability_zones            = [ var.subnet1, var.subnet2 ]
