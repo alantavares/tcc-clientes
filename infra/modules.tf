@@ -1,6 +1,5 @@
 module "ecs" {
   project_name                  = var.project_name
-  organization                  = var.organization
   source                        = "./ecs"
   cluster_name                  = "${var.cluster_name}-${terraform.workspace}"
   app_repository_name           = "${var.app_repository_name}-${terraform.workspace}"
@@ -29,7 +28,6 @@ module "ecs" {
   alb_port                      = var.alb_port
   container_port                = var.container_port
   webserver_container_port      = var.webserver_container_port
-  arn_certificado               = var.arn_certificado
   aws_region                    = var.aws_region  
   availability_zones            = [ var.subnet1, var.subnet2 ]
   migration_deploy_cmd          = var.migration_deploy_cmd

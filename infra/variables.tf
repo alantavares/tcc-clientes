@@ -2,10 +2,6 @@ variable "project_name" {
   description = "The name of project"
 }
 
-variable "organization" {
-  description = "The name of organization"
-}
-
 # ECS
 variable "cluster_name" {
   description = "Cluster name in ECS"
@@ -74,11 +70,6 @@ variable "subnet_alb_1" {
 # ALB Subnet
 variable "subnet_alb_2" {
   description = "Available subnet for ALB. It is in ALB that the SSL settings are located and also where Route53 points the CNAME"
-}
-
-# SSL ARN Certificate
-variable "arn_certificado" {
-  description = "SSL certificate that will be configured in the ALB"
 }
 
 # S3 Bucket

@@ -2,10 +2,6 @@ variable "project_name" {
   description = ""
 }
 
-variable "organization" {
-  description = ""
-}
-
 variable "cluster_name" {
   description = ""
 }
@@ -104,10 +100,6 @@ variable "subnet_alb_1" {
 }
 
 variable "subnet_alb_2" {
-  description = ""
-}
-
-variable "arn_certificado" {
   description = ""
 }
 

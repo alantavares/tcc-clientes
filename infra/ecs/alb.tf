@@ -55,18 +55,3 @@ resource "aws_alb_listener" "web_app" {
     type             = "forward"
   }
 }
-
-resource "aws_alb_listener" "web_app_https" {
-  load_balancer_arn = aws_alb.app_alb.arn
-  port              = 443
-  ssl_policy        = "ELBSecurityPolicy-2016-08"
-  certificate_arn   = var.arn_certificado
-                      
-  protocol          = "HTTPS"
-  depends_on        = [aws_alb_target_group.api_target_group]
-
-  default_action {
-    target_group_arn = aws_alb_target_group.api_target_group.arn
-    type             = "forward"
-  }
-}
