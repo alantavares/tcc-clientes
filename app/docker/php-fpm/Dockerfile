@@ -1,0 +1,110 @@
+FROM php:8.0-fpm-alpine AS base
+
+ARG APP_ENV
+ARG APP_DEBUG
+ARG APP_SECRET
+ARG APP_URL
+ARG EXCEPTION_LISTENER_MODE
+ARG INFRA_ENVIRONMENT
+ARG SYMFONY_DECRYPTION_SECRET
+
+ENV APP_ENV $APP_ENV
+ENV APP_DEBUG $APP_DEBUG
+ENV APP_SECRET $APP_SECRET
+ENV APP_URL $APP_URL
+ENV EXCEPTION_LISTENER_MODE $EXCEPTION_LISTENER_MODE
+ENV INFRA_ENVIRONMENT $INFRA_ENVIRONMENT
+ENV SYMFONY_DECRYPTION_SECRET $SYMFONY_DECRYPTION_SECRET
+
+ENV COMPOSER_ALLOW_SUPERUSER="1"
+ENV PATH="/app/bin:/app/vendor/bin:${PATH}"
+
+RUN docker-php-ext-install pdo_mysql \
+    && apk add --no-cache --virtual pjb-webviewer
+
+COPY --from=composer:2.3 /usr/bin/composer /usr/bin/composer
+
+COPY ./ /app
+COPY ./composer.json  /app/composer.json
+COPY ./composer.lock  /app/composer.lock
+COPY ./docker/php-fpm/www.conf /usr/local/etc/php-fpm.d/www.conf
+
+COPY ./bin       /app/bin
+COPY ./config    /app/config
+COPY ./public    /app/public
+COPY ./src       /app/src
+
+WORKDIR /app
+
+RUN mkdir -p /app/var/ \
+    && mkdir -p /app/var/cache \
+    && mkdir -p /app/var/log \
+    && chmod -R 777 /app/var/ \
+    && chown -R www-data:www-data /app/var \
+    && chmod +x /app/bin/console
+
+RUN apk add --no-cache --virtual .build-deps \
+    g++ make autoconf \
+    && rm -rf /tmp/pear
+
+EXPOSE 9000
+
+FROM base AS dev
+
+RUN echo "Symfony dependency: PHP intl extension." \
+    && apk add --no-cache icu-dev \
+    && docker-php-ext-configure intl \
+    && docker-php-ext-install intl \
+    && docker-php-ext-enable intl
+
+RUN apk add --no-cache $PHPIZE_DEPS \
+    && pecl install xdebug-3.0.0 \
+    && docker-php-ext-enable xdebug
+
+COPY docker/php-fpm/php.dev.ini /usr/local/etc/php/php.ini
+
+CMD php-fpm
+
+FROM base AS ci
+
+ARG WEBVIEWER_URL
+ENV INFRA_ENVIRONMENT $WEBVIEWER_URL
+
+RUN apk add --no-cache $PHPIZE_DEPS \
+    && pecl install xdebug-3.0.0 \
+    && docker-php-ext-enable xdebug
+
+RUN composer validate --strict && \
+    composer install \
+    --optimize-autoloader \
+    --no-ansi \
+    --no-interaction \
+    --no-progress \
+    --no-suggest
+
+FROM base AS prod
+
+ARG DEPLOY_CMD=php-fpm
+ENV DEPLOY_CMD $DEPLOY_CMD
+
+COPY docker/php-fpm/php.prod.ini /usr/local/etc/php/php.ini
+COPY docker/php-fpm/docker-entrypoint.prod.sh /usr/local/bin/docker-entrypoint.sh
+COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/bin/
+
+RUN install-php-extensions intl mysqli opcache
+
+RUN composer install \
+    --no-dev --optimize-autoloader \
+    --no-ansi --no-interaction --no-progress --no-scripts --no-suggest
+
+RUN mkdir -p /app/var/ \
+    && mkdir -p /app/var/cache \
+    && mkdir -p /app/var/log \
+    && chmod -R 777 /app/var/ \
+    && chown -R www-data:www-data /app/var \
+    && chmod +x /usr/local/bin/docker-entrypoint.sh \
+    && chmod +x /app/bin/console \
+    && chmod +x /app/bin/wait-for-mysql.sh
+
+ENTRYPOINT ["sh", "/usr/local/bin/docker-entrypoint.sh"]
+CMD ${DEPLOY_CMD}

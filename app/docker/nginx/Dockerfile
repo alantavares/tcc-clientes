@@ -7,11 +7,11 @@ RUN mkdir -p public
 
 FROM nginx:1.17.10-alpine
 
-COPY default.conf.template /etc/nginx/conf.d/default.conf.template
+COPY docker/nginx/default.conf.template /etc/nginx/conf.d/default.conf.template
 
-COPY docker-entrypoint.prod.sh /docker-entrypoint.sh
+COPY docker/nginx/docker-entrypoint.prod.sh /docker-entrypoint.sh
 
-COPY --from=assets /var/www/symfony_docker/public /var/www/app/public
+COPY --from=assets /app/public /var/www/app/public
 
 RUN chmod +x /docker-entrypoint.sh
 
