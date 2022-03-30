@@ -16,26 +16,44 @@ services:
       - ./mysql:/var/lib/mysql
   
   php:
-    container_name: php
+    image: poc_php
     build:
-      context: ./php
+      context: ./app
+      dockerfile: ./docker/php-fpm/Dockerfile
+      target: dev
+      args:
+        - XDEBUG_REMOTE_HOST=${XDEBUG_REMOTE_HOST:-172.17.0.1} # No Mac, substituir por: host.docker.internal
+        - DB_SERVER=database
+        - DB_PORT=3306
+        - DB_NAME=symfony_docker
+        - DB_USER=symfony
+        - DB_PASSWORD=symfony
+        - INFRA_ENVIRONMENT=dev
+        - APP_ENV=dev
     environment:
       DATABASE_URL: mysql://symfony:symfony@database:3306/symfony_docker?serverVersion=8
     ports:
       - '9000:9000'
     volumes:
-      - ./app:/var/www/symfony_docker
+      - ./app:/app
+      - ./app/docker/php-fpm/php.dev.ini:/usr/local/etc/php/conf.d/extras-php.ini
     depends_on:
       - database
   
   nginx:
-    container_name: nginx
-    image: nginx:stable-alpine
+    image: poc_nginx
+    links:
+      - php
+    build:
+      context: ./app
+      dockerfile: ./docker/nginx/Dockerfile
     ports:
       - '8080:80'
     volumes:
-      - ./app:/var/www/symfony_docker
-      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+      - "./app/public:/var/www/app/public"
     depends_on:
       - php
       - database
+    environment:
+      - API_HOST=php
+      - API_PORT=9000
