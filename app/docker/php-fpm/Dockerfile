@@ -23,15 +23,21 @@ RUN docker-php-ext-install pdo_mysql \
     && apk add --no-cache --virtual pjb-webviewer
 
 COPY --from=composer:2.3 /usr/bin/composer /usr/bin/composer
-
+RUN true
 COPY ./ /app
+RUN true
 COPY ./composer.json  /app/composer.json
+RUN true
 COPY ./composer.lock  /app/composer.lock
+RUN true
 COPY ./docker/php-fpm/www.conf /usr/local/etc/php-fpm.d/www.conf
-
+RUN true
 COPY ./bin       /app/bin
+RUN true
 COPY ./config    /app/config
+RUN true
 COPY ./public    /app/public
+RUN true
 COPY ./src       /app/src
 
 WORKDIR /app
@@ -88,7 +94,9 @@ ARG DEPLOY_CMD=php-fpm
 ENV DEPLOY_CMD $DEPLOY_CMD
 
 COPY docker/php-fpm/php.prod.ini /usr/local/etc/php/php.ini
+RUN true
 COPY docker/php-fpm/docker-entrypoint.prod.sh /usr/local/bin/docker-entrypoint.sh
+RUN true
 COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/bin/
 
 RUN install-php-extensions intl mysqli opcache
