@@ -50,11 +50,11 @@ jobs:
           # Build a docker container and
           # push it to ECR so that it can
           # be deployed to ECS.
-          cd app/docker/php-fpm
-          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          cd app/
+          docker build -f docker/php-fpm/Dockerfile --target prod -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
-          cd ../nginx
+          cd ./docker/nginx
           docker build -t $ECR_REGISTRY/$ECR_WEBSERVER_REPOSITORY:$IMAGE_TAG .
           docker push $ECR_REGISTRY/$ECR_WEBSERVER_REPOSITORY:$IMAGE_TAG
           echo "::set-output name=image_webserver::$ECR_REGISTRY/$ECR_WEBSERVER_REPOSITORY:$IMAGE_TAG"
