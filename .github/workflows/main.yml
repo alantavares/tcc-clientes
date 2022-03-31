@@ -13,6 +13,7 @@ on:
 env:
   AWS_REGION: us-east-1                   # set this to your preferred AWS region, e.g. us-west-1
   ECR_REPOSITORY: clientes-php-default           # set this to your Amazon ECR repository name
+  ECR_WEBSERVER_REPOSITORY: clientes-nginx-default
   ECS_SERVICE: clientes-default                 # set this to your Amazon ECS service name
   ECS_CLUSTER: clientes-default                 # set this to your Amazon ECS cluster name
   ECS_TASK_DEFINITION: infra/ecs/task-definitions/api-task.json # set this to the path to your Amazon ECS task definition file, e.g. .aws/task-definition.json
@@ -49,7 +50,35 @@ jobs:
           # Build a docker container and
           # push it to ECR so that it can
           # be deployed to ECS.
-          cd php
-          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          cd app/
+          docker build --build-arg APP_ENV=prod --build-arg APP_DEBUG=0 --build-arg INFRA_ENVIRONMENT=prod -f docker/php-fpm/Dockerfile --target prod -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+          cd ./docker/nginx
+          docker build -t $ECR_REGISTRY/$ECR_WEBSERVER_REPOSITORY:$IMAGE_TAG .
+          docker push $ECR_REGISTRY/$ECR_WEBSERVER_REPOSITORY:$IMAGE_TAG
+          echo "::set-output name=image_webserver::$ECR_REGISTRY/$ECR_WEBSERVER_REPOSITORY:$IMAGE_TAG"
+
+      - name: Updating webserver image on taskdef
+        id: task-def-webserver
+        uses: aws-actions/amazon-ecs-render-task-definition@97587c9d45a4930bf0e3da8dd2feb2a463cf4a3a
+        with:
+          task-definition: ${{ env.ECS_TASK_DEFINITION }}
+          container-name: ${{ env.CONTAINER_NAME }}
+          image: ${{ steps.build-image.outputs.image_webserver }}
+
+      - name: Updating application image on taskdef
+        id: task-def
+        uses: aws-actions/amazon-ecs-render-task-definition@97587c9d45a4930bf0e3da8dd2feb2a463cf4a3a
+        with:
+          task-definition: ${{ env.ECS_TASK_DEFINITION }}
+          container-name: ${{ env.CONTAINER_NAME }}
+          image: ${{ steps.build-image.outputs.image }}
+      
+      - name: Deploy Amazon ECS task definition
+        uses: aws-actions/amazon-ecs-deploy-task-definition@de0132cf8cdedb79975c6d42b77eb7ea193cf28e
+        with:
+          task-definition: ${{ steps.task-def.outputs.task-definition }}
+          service: ${{ env.ECS_SERVICE }}
+          cluster: ${{ env.ECS_CLUSTER }}
+          wait-for-service-stability: true
