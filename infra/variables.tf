@@ -84,3 +84,11 @@ variable "migration_deploy_cmd" {
 variable "service_migration_name" {
   description = "Name of Migration service"
 }
+
+variable "db_password" {
+  description = "Database password"
+}
+
+variable "db_username" {
+  description = "Database username"
+}
