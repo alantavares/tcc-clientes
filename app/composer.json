@@ -1,4 +1,6 @@
 {
+    "name" : "alantavares/clients",
+    "description" : "The final poc",
     "type": "project",
     "license": "proprietary",
     "minimum-stability": "stable",
