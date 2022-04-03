@@ -12,6 +12,9 @@ on:
 
 env:
   AWS_REGION: us-east-1                   # set this to your preferred AWS region, e.g. us-west-1
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
   ECR_REPOSITORY: clientes-php-default           # set this to your Amazon ECR repository name
   ECR_WEBSERVER_REPOSITORY: clientes-nginx-default
   ECS_SERVICE: clientes-default                 # set this to your Amazon ECS service name
@@ -62,12 +65,8 @@ jobs:
 
       - name: Updating application images
         id: task-def
-        runs-on: alpine:3.13
-        env:
-          AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
         run: |
-          apk --no-cache add ca-certificates curl bash jq py3-pip
-          pip install awscli
+          apt install awscli
           aws ecr get-login-password --region $AWS_REGION
           curl https://raw.githubusercontent.com/silinternational/ecs-deploy/master/ecs-deploy -o /bin/ecs-deploy
           chmod +x /bin/ecs-deploy
