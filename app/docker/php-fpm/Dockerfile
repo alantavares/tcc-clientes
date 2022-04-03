@@ -113,8 +113,7 @@ RUN mkdir -p /app/var/ \
     && chmod -R 777 /app/var/ \
     && chown -R www-data:www-data /app/var \
     && chmod +x /usr/local/bin/docker-entrypoint.sh \
-    && chmod +x /app/bin/console \
-    && chmod +x /app/bin/wait-for-mysql.sh
+    && chmod +x /app/bin/console
 
 ENTRYPOINT ["sh", "/usr/local/bin/docker-entrypoint.sh"]
 CMD ${DEPLOY_CMD}
