@@ -71,7 +71,7 @@ jobs:
           sudo curl https://raw.githubusercontent.com/silinternational/ecs-deploy/master/ecs-deploy -o /bin/ecs-deploy
           sudo chmod +x /bin/ecs-deploy
           ecs-deploy --region $AWS_REGION --cluster arn:aws:ecs:$AWS_REGION:$AWS_ACCOUNT_ID:cluster/${ECS_CLUSTER} --task-definition ${ECS_TASK_DEFINITION_NAME} --image ${{ steps.build-image.outputs.image }} --timeout 600 --min 100 --max 200
-          ecs-deploy --region $AWS_REGION --cluster arn:aws:ecs:$AWS_REGION:$AWS_ACCOUNT_ID:cluster/${ECS_CLUSTER} --service-name scd-il-dda-${DRONE_SOURCE_BRANCH} --use-latest-task-def --image ${{ steps.build-image.outputs.image_webserver }} --timeout 600 --min 100 --max 200
+          ecs-deploy --region $AWS_REGION --cluster arn:aws:ecs:$AWS_REGION:$AWS_ACCOUNT_ID:cluster/${ECS_CLUSTER} --service-name clientes-default --use-latest-task-def --image ${{ steps.build-image.outputs.image_webserver }} --timeout 600 --min 100 --max 200
 
       # - name: Updating webserver image on taskdef
       #   id: task-def-webserver
