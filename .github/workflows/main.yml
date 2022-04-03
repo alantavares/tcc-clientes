@@ -68,8 +68,8 @@ jobs:
         run: |
           sudo apt install awscli
           aws ecr get-login-password --region $AWS_REGION
-          curl https://raw.githubusercontent.com/silinternational/ecs-deploy/master/ecs-deploy -o /bin/ecs-deploy
-          chmod +x /bin/ecs-deploy
+          sudo curl https://raw.githubusercontent.com/silinternational/ecs-deploy/master/ecs-deploy -o /bin/ecs-deploy
+          sudo chmod +x /bin/ecs-deploy
           ecs-deploy
             --region $AWS_REGION
             --cluster arn:aws:ecs:$AWS_REGION:$AWS_ACCOUNT_ID:cluster/${ECS_CLUSTER}
