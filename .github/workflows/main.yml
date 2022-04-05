@@ -59,7 +59,7 @@ jobs:
           docker build --build-arg APP_ENV=prod --build-arg APP_DEBUG=0 --build-arg INFRA_ENVIRONMENT=prod -f docker/php-fpm/Dockerfile --target prod -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
-          docker build -f docker/nginx/Dockerfile -t $ECR_REGISTRY/$ECR_WEBSERVER_REPOSITORY:$IMAGE_TAG .
+          docker build -f docker/nginx/Dockerfile --build-arg API_HOST=localhost --build-arg API_PORT=9000 -t $ECR_REGISTRY/$ECR_WEBSERVER_REPOSITORY:$IMAGE_TAG .
           docker push $ECR_REGISTRY/$ECR_WEBSERVER_REPOSITORY:$IMAGE_TAG
           echo "::set-output name=image_webserver::$ECR_REGISTRY/$ECR_WEBSERVER_REPOSITORY:$IMAGE_TAG"
 
