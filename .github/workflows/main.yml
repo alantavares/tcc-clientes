@@ -50,13 +50,15 @@ jobs:
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           IMAGE_TAG: ${{ github.sha }}
-          DATABASE_URL: mysql://${{ secrets.DB_USER }}:${{ secrets.DB_PASSWORD }}@${{ secrets.HOST }}/clientes?serverVersion=8
+          DB_USER: ${{ secrets.DB_USER }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          DB_HOST: ${{ secrets.DB_HOST }}
         run: |
           # Build a docker container and
           # push it to ECR so that it can
           # be deployed to ECS.
           cd app/
-          docker build --build-arg DATABASE_URL=$DATABASE_URL --build-arg APP_ENV=prod --build-arg APP_DEBUG=0 --build-arg INFRA_ENVIRONMENT=prod -f docker/php-fpm/Dockerfile --target prod -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          docker build --build-arg DATABASE_URL=mysql://$DB_USER:$DB_PASSWORD@$DB_HOST/clientes?serverVersion=8 --build-arg APP_ENV=prod --build-arg APP_DEBUG=0 --build-arg INFRA_ENVIRONMENT=prod -f docker/php-fpm/Dockerfile --target prod -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
           docker build -f docker/nginx/Dockerfile --build-arg API_HOST=localhost --build-arg API_PORT=9000 -t $ECR_REGISTRY/$ECR_WEBSERVER_REPOSITORY:$IMAGE_TAG .
