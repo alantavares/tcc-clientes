@@ -43,6 +43,13 @@ chmod 766 /app/bin/console
 /app/bin/console cache:warmup --env=$INFRA_ENVIRONMENT
 echo "- Done"
 
+if [ "$INFRA_ENVIRONMENT" == "prod" ]
+then
+    echo "- Running migrations"
+    /app/bin/console doctrine:migrations:migrate -n
+    echo "- Done"
+fi
+
 echo "Done entrypoint!"
 
 exec "$@"
