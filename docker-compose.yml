@@ -30,6 +30,7 @@ services:
         - DB_PASSWORD=symfony
         - INFRA_ENVIRONMENT=dev
         - APP_ENV=dev
+        - APP_DEBUG=1
     environment:
       DATABASE_URL: mysql://symfony:symfony@database:3306/symfony_docker?serverVersion=8
     ports:
