@@ -28,4 +28,9 @@ final class Version20220219134153 extends AbstractMigration
         // this down() migration is auto-generated, please modify it to your needs
         $this->addSql('ALTER TABLE client CHANGE id id INT AUTO_INCREMENT NOT NULL');
     }
+
+    public function isTransactional(): bool
+    {
+        return false;
+    }
 }
