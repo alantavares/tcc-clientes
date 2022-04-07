@@ -21,8 +21,21 @@ ENV DATABASE_URL $DATABASE_URL
 ENV COMPOSER_ALLOW_SUPERUSER="1"
 ENV PATH="/app/bin:/app/vendor/bin:${PATH}"
 
+RUN apk add --no-cache --virtual .make-deps bash make wget git gcc g++ && apk add --no-cache musl-dev zlib-dev openssl zstd-dev pkgconfig libc-dev \
+    && wget https://github.com/edenhill/librdkafka/archive/refs/tags/v1.6.2.tar.gz \
+    && tar -xvf v1.6.2.tar.gz \
+    && cd librdkafka-1.6.2 \
+    && ./configure --prefix /usr \
+    && make \
+    && make install
+
 RUN docker-php-ext-install pdo_mysql \
-    && apk add --no-cache --virtual pjb-webviewer
+    && apk add --no-cache --virtual pjb-webviewer \
+    && apk add --no-cache --update --virtual buildDeps autoconf \
+    && apk add build-base \
+    && pecl install rdkafka-6.0.1 \
+    && docker-php-ext-enable rdkafka \
+    && apk del buildDeps
 
 COPY --from=composer:2.3 /usr/bin/composer /usr/bin/composer
 RUN true
