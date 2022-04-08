@@ -2,6 +2,8 @@
 
 namespace App\Domain\Event;
 
+use App\Entity\Client;
+
 class ClientCreated
 {
 
@@ -12,6 +14,10 @@ class ClientCreated
     private $email;
 
     private $phone;
+
+    public static function createFromClient(Client $client){
+        return new ClientCreated($client->getId(), $client->getName(), $client->getEmail(), $client->getPhone());
+    }
 
     public function __construct(string $id, string $name, string $email, string $phone)
     {

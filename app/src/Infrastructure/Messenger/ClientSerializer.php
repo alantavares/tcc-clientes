@@ -15,7 +15,8 @@ final class ClientSerializer implements SerializerInterface
         return new Envelope(new ClientCreated(
             $record['id'],
             $record['name'],
-            $record['description'],
+            $record['email'],
+            $record['phone'],
         ));
     }
 
