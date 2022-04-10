@@ -21,8 +21,41 @@ ENV DATABASE_URL $DATABASE_URL
 ENV COMPOSER_ALLOW_SUPERUSER="1"
 ENV PATH="/app/bin:/app/vendor/bin:${PATH}"
 
+ARG DEPLOY_CMD=php-fpm
+ENV DEPLOY_CMD $DEPLOY_CMD
+
+# add virtual build dependencies
+RUN apk add --no-cache --virtual build-deps bash make wget git gcc g++ autoconf
+
+# rdkafka dependencies 
+RUN apk add --no-cache musl-dev zlib-dev openssl zstd-dev pkgconfig libc-dev \
+    && wget https://github.com/edenhill/librdkafka/archive/refs/tags/v1.6.2.tar.gz \
+    && tar -xvf v1.6.2.tar.gz \
+    && cd librdkafka-1.6.2 \
+    && ./configure --prefix /usr \
+    && make \
+    && make install
+
+# Parquet dependencies
+RUN git clone --recursive --depth=1 https://github.com/kjdev/php-ext-snappy.git \
+    && cd php-ext-snappy \
+    && phpize \
+    && ./configure \
+    && make \
+    && make install \
+    && docker-php-ext-enable snappy \
+    && apk add gmp-dev \
+    && docker-php-ext-install gmp \
+    && docker-php-ext-install bcmath
+
+# Enable kafka connection dependecy
 RUN docker-php-ext-install pdo_mysql \
-    && apk add --no-cache --virtual pjb-webviewer
+    && apk add build-base \
+    && pecl install rdkafka-6.0.1 \
+    && docker-php-ext-enable rdkafka
+
+# removing build dependencies
+RUN apk del build-deps
 
 COPY --from=composer:2.3 /usr/bin/composer /usr/bin/composer
 RUN true
@@ -59,6 +92,10 @@ EXPOSE 9000
 
 FROM base AS dev
 
+ENV WAIT_VERSION 2.9.0
+ADD https://github.com/ufoscout/docker-compose-wait/releases/download/$WAIT_VERSION/wait /wait
+RUN chmod +x /wait
+
 RUN echo "Symfony dependency: PHP intl extension." \
     && apk add --no-cache icu-dev \
     && docker-php-ext-configure intl \
@@ -71,29 +108,9 @@ RUN apk add --no-cache $PHPIZE_DEPS \
 
 COPY docker/php-fpm/php.dev.ini /usr/local/etc/php/php.ini
 
-CMD php-fpm
-
-FROM base AS ci
-
-ARG WEBVIEWER_URL
-ENV INFRA_ENVIRONMENT $WEBVIEWER_URL
-
-RUN apk add --no-cache $PHPIZE_DEPS \
-    && pecl install xdebug-3.0.0 \
-    && docker-php-ext-enable xdebug
-
-RUN composer validate --strict && \
-    composer install \
-    --optimize-autoloader \
-    --no-ansi \
-    --no-interaction \
-    --no-progress \
-    --no-suggest
+CMD /wait && ${DEPLOY_CMD}
 
 FROM base AS prod
-
-ARG DEPLOY_CMD=php-fpm
-ENV DEPLOY_CMD $DEPLOY_CMD
 
 COPY docker/php-fpm/php.prod.ini /usr/local/etc/php/php.ini
 RUN true

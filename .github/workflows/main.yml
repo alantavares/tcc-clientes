@@ -45,54 +45,30 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@aaf69d68aa3fb14c1d5a6be9ac61fe15b48453a2
 
-      - name: Build, tag, and push image to Amazon ECR
-        id: build-image
-        env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          IMAGE_TAG: ${{ github.sha }}
-          DATABASE_URL: mysql://${{ secrets.DB_USERNAME }}:${{ secrets.DB_PASSWORD }}@${{ secrets.DB_HOST }}/clients?serverVersion=8
-        run: |
-          # Build a docker container and
-          # push it to ECR so that it can
-          # be deployed to ECS.
-          cd app/
-          docker build --build-arg DATABASE_URL=$DATABASE_URL --build-arg APP_ENV=prod --build-arg APP_DEBUG=0 --build-arg INFRA_ENVIRONMENT=prod -f docker/php-fpm/Dockerfile --target prod -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-          echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
-          docker build -f docker/nginx/Dockerfile --build-arg API_HOST=localhost --build-arg API_PORT=9000 -t $ECR_REGISTRY/$ECR_WEBSERVER_REPOSITORY:$IMAGE_TAG .
-          docker push $ECR_REGISTRY/$ECR_WEBSERVER_REPOSITORY:$IMAGE_TAG
-          echo "::set-output name=image_webserver::$ECR_REGISTRY/$ECR_WEBSERVER_REPOSITORY:$IMAGE_TAG"
+      # - name: Build, tag, and push image to Amazon ECR
+      #   id: build-image
+      #   env:
+      #     ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+      #     IMAGE_TAG: ${{ github.sha }}
+      #     DATABASE_URL: mysql://${{ secrets.DB_USERNAME }}:${{ secrets.DB_PASSWORD }}@${{ secrets.DB_HOST }}/clients?serverVersion=8
+      #   run: |
+      #     # Build a docker container and
+      #     # push it to ECR so that it can
+      #     # be deployed to ECS.
+      #     cd app/
+      #     docker build --build-arg DATABASE_URL=$DATABASE_URL --build-arg APP_ENV=prod --build-arg APP_DEBUG=0 --build-arg INFRA_ENVIRONMENT=prod -f docker/php-fpm/Dockerfile --target prod -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+      #     docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+      #     echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+      #     docker build -f docker/nginx/Dockerfile --build-arg API_HOST=localhost --build-arg API_PORT=9000 -t $ECR_REGISTRY/$ECR_WEBSERVER_REPOSITORY:$IMAGE_TAG .
+      #     docker push $ECR_REGISTRY/$ECR_WEBSERVER_REPOSITORY:$IMAGE_TAG
+      #     echo "::set-output name=image_webserver::$ECR_REGISTRY/$ECR_WEBSERVER_REPOSITORY:$IMAGE_TAG"
 
-      - name: Updating application images
-        id: task-def
-        run: |
-          sudo apt install awscli
-          aws ecr get-login-password --region $AWS_REGION
-          sudo curl https://raw.githubusercontent.com/silinternational/ecs-deploy/master/ecs-deploy -o /bin/ecs-deploy
-          sudo chmod +x /bin/ecs-deploy
-          ecs-deploy --region $AWS_REGION --cluster arn:aws:ecs:$AWS_REGION:$AWS_ACCOUNT_ID:cluster/${ECS_CLUSTER} --task-definition ${ECS_TASK_DEFINITION_NAME} --image ${{ steps.build-image.outputs.image }} --timeout 600 --min 100 --max 200
-          ecs-deploy --region $AWS_REGION --cluster arn:aws:ecs:$AWS_REGION:$AWS_ACCOUNT_ID:cluster/${ECS_CLUSTER} --service-name clientes-default --use-latest-task-def --image ${{ steps.build-image.outputs.image_webserver }} --timeout 600 --min 100 --max 200
-
-      # - name: Updating webserver image on taskdef
-      #   id: task-def-webserver
-      #   uses: aws-actions/amazon-ecs-render-task-definition@97587c9d45a4930bf0e3da8dd2feb2a463cf4a3a
-      #   with:
-      #     task-definition: ${{ env.ECS_TASK_DEFINITION }}
-      #     container-name: ${{ env.CONTAINER_NAME }}
-      #     image: ${{ steps.build-image.outputs.image_webserver }}
-
-      # - name: Updating application image on taskdef
+      # - name: Updating application images
       #   id: task-def
-      #   uses: aws-actions/amazon-ecs-render-task-definition@97587c9d45a4930bf0e3da8dd2feb2a463cf4a3a
-      #   with:
-      #     task-definition: ${{ env.ECS_TASK_DEFINITION }}
-      #     container-name: ${{ env.CONTAINER_NAME }}
-      #     image: ${{ steps.build-image.outputs.image }}
-      
-      # - name: Deploy Amazon ECS task definition
-      #   uses: aws-actions/amazon-ecs-deploy-task-definition@de0132cf8cdedb79975c6d42b77eb7ea193cf28e
-      #   with:
-      #     task-definition: ${{ steps.task-def.outputs.task-definition }}
-      #     service: ${{ env.ECS_SERVICE }}
-      #     cluster: ${{ env.ECS_CLUSTER }}
-      #     wait-for-service-stability: true
+      #   run: |
+      #     sudo apt install awscli
+      #     aws ecr get-login-password --region $AWS_REGION
+      #     sudo curl https://raw.githubusercontent.com/silinternational/ecs-deploy/master/ecs-deploy -o /bin/ecs-deploy
+      #     sudo chmod +x /bin/ecs-deploy
+      #     ecs-deploy --region $AWS_REGION --cluster arn:aws:ecs:$AWS_REGION:$AWS_ACCOUNT_ID:cluster/${ECS_CLUSTER} --task-definition ${ECS_TASK_DEFINITION_NAME} --image ${{ steps.build-image.outputs.image }} --timeout 600 --min 100 --max 200
+      #     ecs-deploy --region $AWS_REGION --cluster arn:aws:ecs:$AWS_REGION:$AWS_ACCOUNT_ID:cluster/${ECS_CLUSTER} --service-name clientes-default --use-latest-task-def --image ${{ steps.build-image.outputs.image_webserver }} --timeout 600 --min 100 --max 200

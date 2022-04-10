@@ -33,6 +33,9 @@ services:
         - APP_DEBUG=1
     environment:
       DATABASE_URL: mysql://symfony:symfony@database:3306/symfony_docker?serverVersion=8
+      KAFKA_URL: kafka://kafka:29092
+      S3_BUCKET: bi-tcc
+      S3_ENDPOINT: http://s3local
     ports:
       - '9000:9000'
     volumes:
@@ -40,6 +43,39 @@ services:
       - ./app/docker/php-fpm/php.dev.ini:/usr/local/etc/php/conf.d/extras-php.ini
     depends_on:
       - database
+      - kafka
+      - s3local
+  
+  # php_consumer:
+  #   image: poc_php_consumer
+  #   build:
+  #     context: ./app
+  #     dockerfile: ./docker/php-fpm/Dockerfile
+  #     target: dev
+  #     args:
+  #       - XDEBUG_REMOTE_HOST=${XDEBUG_REMOTE_HOST:-172.17.0.1} # No Mac, substituir por: host.docker.internal
+  #       - DB_SERVER=database
+  #       - DB_PORT=3306
+  #       - DB_NAME=symfony_docker
+  #       - DB_USER=symfony
+  #       - DB_PASSWORD=symfony
+  #       - INFRA_ENVIRONMENT=dev
+  #       - APP_ENV=dev
+  #       - APP_DEBUG=1
+  #       - DEPLOY_CMD=composer consumer
+  #   environment:
+  #     WAIT_HOSTS: kafka:29092, database:3306
+  #     DATABASE_URL: mysql://symfony:symfony@database:3306/symfony_docker?serverVersion=8
+  #     KAFKA_URL: kafka://kafka:29092      
+  #     S3_BUCKET: bi-tcc
+  #     S3_ENDPOINT: http://s3local:8081
+  #   volumes:
+  #     - ./app:/app
+  #     - ./app/docker/php-fpm/php.dev.ini:/usr/local/etc/php/conf.d/extras-php.ini
+  #   depends_on:
+  #     - database
+  #     - kafka
+  #     - s3local
   
   nginx:
     image: poc_nginx
@@ -58,3 +94,34 @@ services:
     environment:
       - API_HOST=php
       - API_PORT=9000
+  
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.1.0
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - 22181:2181
+  
+  kafka:
+    image: confluentinc/cp-kafka:7.1.0
+    depends_on:
+      - zookeeper
+    ports:
+      - 29092:29092
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://kafka:29092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+
+  s3local:
+    image: andrewgaul/s3proxy
+    ports:
+      - 8081:80
+    environment:
+      S3PROXY_AUTHORIZATION: none
+  
+  
