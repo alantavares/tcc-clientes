@@ -10,7 +10,8 @@
           "ecr:BatchGetImage",
           "logs:CreateLogStream",
           "logs:PutLogEvents",
-          "s3:*"
+          "s3:*",
+          "kafka:*"
         ],
         "Resource": "*"
       }
