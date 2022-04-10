@@ -92,3 +92,20 @@ variable "db_password" {
 variable "db_username" {
   description = "Database username"
 }
+
+
+variable "worker_consumer_name" {
+  description = "Name of worker consumer service"
+}
+
+variable "worker_consumer_container_port" {
+  description = "Port on which the docker container will expose the PHP Worker Consumer service"
+}
+
+variable "worker_consumer_container_name" {
+  description = "PHP Worker Consumer container name"
+}
+
+variable "worker_consumer_deploy_cmd" {
+  description = "Command that will be executed when deploying the Worker Consumer image"
+}

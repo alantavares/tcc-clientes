@@ -23,6 +23,22 @@ module "ecs" {
   cpu_to_scale_up               = local.workspace["cpu_to_scale_up"]
   cpu_to_scale_down             = local.workspace["cpu_to_scale_down"]
 
+  worker_consumer_name          = "${var.worker_consumer_name}-${terraform.workspace}"
+  worker_consumer_desired_tasks                 = local.workspace["worker_consumer_desired_tasks"]
+  worker_consumer_max_tasks                     = local.workspace["worker_consumer_max_tasks"]
+  worker_consumer_min_tasks                     = local.workspace["worker_consumer_min_tasks"]
+  worker_consumer_desired_task_cpu              = local.workspace["worker_consumer_desired_task_cpu"]
+  worker_consumer_desired_webserver_task_cpu    = local.workspace["worker_consumer_desired_webserver_task_cpu"]
+  worker_consumer_desired_app_task_cpu          = local.workspace["worker_consumer_desired_app_task_cpu"]
+  worker_consumer_desired_task_memory           = local.workspace["worker_consumer_desired_task_memory"]
+  worker_consumer_desired_webserver_task_memory = local.workspace["worker_consumer_desired_webserver_task_memory"]
+  worker_consumer_desired_app_task_memory       = local.workspace["worker_consumer_desired_app_task_memory"]
+  worker_consumer_cpu_to_scale_up               = local.workspace["worker_consumer_cpu_to_scale_up"]
+  worker_consumer_cpu_to_scale_down             = local.workspace["worker_consumer_cpu_to_scale_down"]
+  worker_consumer_deploy_cmd                    = var.worker_consumer_deploy_cmd
+  worker_consumer_container_port = var.worker_consumer_container_port
+  worker_consumer_container_name = var.worker_consumer_container_name
+
   subnet_alb_1                  = var.subnet_alb_1
   subnet_alb_2                  = var.subnet_alb_2
   alb_port                      = var.alb_port

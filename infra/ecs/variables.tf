@@ -118,3 +118,63 @@ variable "migration_deploy_cmd" {
 variable "service_migration_name" {
   description = ""
 }
+
+variable "worker_consumer_name" {
+  description = ""
+}
+
+variable "worker_consumer_container_port" {
+  description = ""
+}
+
+variable "worker_consumer_container_name" {
+  description = ""
+}
+
+variable "worker_consumer_deploy_cmd" {
+  description = ""
+}
+
+variable "worker_consumer_desired_tasks" {
+  description = 6
+}
+
+variable "worker_consumer_desired_task_cpu" {
+  description = ""
+}
+
+variable "worker_consumer_desired_webserver_task_cpu" {
+  description = ""
+}
+
+variable "worker_consumer_desired_app_task_cpu" {
+  description = ""
+}
+
+variable "worker_consumer_desired_task_memory" {
+  description = ""
+}
+
+variable "worker_consumer_desired_webserver_task_memory" {
+  description = ""
+}
+
+variable "worker_consumer_desired_app_task_memory" {
+  description = ""
+}
+
+variable "worker_consumer_min_tasks" {
+  description = ""
+}
+
+variable "worker_consumer_max_tasks" {
+  description = ""
+}
+
+variable "worker_consumer_cpu_to_scale_up" {
+  description = ""
+}
+
+variable "worker_consumer_cpu_to_scale_down" {
+  description = ""
+}

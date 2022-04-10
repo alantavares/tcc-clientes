@@ -28,3 +28,29 @@ resource "aws_ecs_task_definition" "web-api" {
   execution_role_arn = aws_iam_role.ecs_execution_role.arn
   task_role_arn      = aws_iam_role.ecs_execution_role.arn
 }
+
+data "template_file" "worker_consumer_task" {
+  template = file("${path.module}/task-definitions/worker-task.json")
+
+  vars = {
+    image                   = aws_ecr_repository.web-app.repository_url
+    container_name          = var.worker_consumer_container_name
+    container_port          = var.worker_consumer_container_port
+    desired_app_task_cpu    = var.worker_consumer_desired_app_task_cpu
+    desired_app_task_memory = var.worker_consumer_desired_app_task_memory
+    log_group               = aws_cloudwatch_log_group.worker-consumer.name
+    deploy_cmd              = var.worker_consumer_deploy_cmd
+  }
+}
+
+resource "aws_ecs_task_definition" "worker-consumer" {
+  family                   = "${var.worker_consumer_name}_app"
+  container_definitions    = data.template_file.worker_consumer_task.rendered
+  requires_compatibilities = ["FARGATE"]
+  network_mode             = "awsvpc"
+  cpu                      = var.worker_consumer_desired_task_cpu
+  memory                   = var.worker_consumer_desired_task_memory
+
+  execution_role_arn = aws_iam_role.ecs_execution_role.arn
+  task_role_arn      = aws_iam_role.ecs_execution_role.arn
+}

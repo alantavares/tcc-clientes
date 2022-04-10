@@ -16,3 +16,8 @@ subnet2                            = "subnet-604ff82d"
 subnet_alb_1                       = "subnet-1a77953b"
 subnet_alb_2                       = "subnet-604ff82d"
 migration_deploy_cmd               = "console doctrine:migrations:migrate -n"
+
+worker_consumer_name               = "tcc_clients_worker_consumer"
+worker_consumer_container_port     = "9000"
+worker_consumer_container_name     = "php"
+worker_consumer_deploy_cmd         = "composer worker:queue:consumer"
