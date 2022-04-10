@@ -9,3 +9,11 @@ resource "aws_cloudwatch_log_group" "web-app" {
     Application = var.cluster_name
   }
 }
+
+resource "aws_cloudwatch_log_group" "worker-consumer" {
+  name = "${var.worker_consumer_name}-logs"
+
+  tags = {
+    Application = var.cluster_name
+  }
+}
