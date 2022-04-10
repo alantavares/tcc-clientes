@@ -25,7 +25,7 @@ worker_consumer_deploy_cmd         = "composer consumer"
 
 # msk vars
 msk_cluster_name                   = "clientes-msk"
-number_of_nodes                    = 1
+number_of_nodes                    = 2
 ebs_volume_size                    = 10
 instance_type                      = "kafka.t3.small"
 kafka_version                      = "2.8.1"
