@@ -130,3 +130,7 @@ variable "ebs_volume_size" {
 variable "server_properties" {
   description = "AWS MSK properties (https://docs.aws.amazon.com/msk/latest/developerguide/msk-configuration-properties.html)"
 }
+
+variable "msk_cluster_name" {
+  description = "MSK Cluster name"
+}
