@@ -40,6 +40,7 @@ data "template_file" "worker_consumer_task" {
     desired_app_task_memory = var.worker_consumer_desired_app_task_memory
     log_group               = aws_cloudwatch_log_group.worker-consumer.name
     deploy_cmd              = var.worker_consumer_deploy_cmd
+    aws_region              = var.aws_region
   }
 }
 
