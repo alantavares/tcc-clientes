@@ -93,7 +93,7 @@ variable "db_username" {
   description = "Database username"
 }
 
-
+# Consumer vars
 variable "worker_consumer_name" {
   description = "Name of worker consumer service"
 }
@@ -108,4 +108,29 @@ variable "worker_consumer_container_name" {
 
 variable "worker_consumer_deploy_cmd" {
   description = "Command that will be executed when deploying the Worker Consumer image"
+}
+
+# MSK Vars
+variable "kafka_version" {
+  description = "Kafka version"
+}
+
+variable "number_of_nodes" {
+  description = "Number of nodes of MSK cluster"
+}
+
+variable "instance_type" {
+  description = "AWS instance type (e.g. kafka.t3.small)"
+}
+
+variable "ebs_volume_size" {
+  description = "The size in GiB of the EBS volume for the data drive on each broker node"
+}
+
+variable "server_properties" {
+  description = "AWS MSK properties (https://docs.aws.amazon.com/msk/latest/developerguide/msk-configuration-properties.html)"
+}
+
+variable "msk_cluster_name" {
+  description = "MSK Cluster name"
 }
