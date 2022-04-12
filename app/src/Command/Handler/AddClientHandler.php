@@ -39,7 +39,7 @@ class AddClientHandler implements MessageHandlerInterface
 
         $this->em->persist($client);
 
-        // $this->bus->dispatch( ClientCreated::createFromClient($client) );
+        $this->bus->dispatch( ClientCreated::createFromClient($client) );
 
         return $client;
         
