@@ -52,4 +52,4 @@ jobs:
           TF_VAR_db_password: ${{ secrets.DB_PASSWORD }}
         run: |
           cd infra
-          terraform destroy -var-file=terraform.tfvars -auto-approve -input=false
+          terraform apply -var-file=terraform.tfvars -auto-approve -input=false
