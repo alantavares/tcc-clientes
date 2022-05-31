@@ -31,11 +31,11 @@ framework:
             #         flushRetries: 5
             #         topic:
             #             name: 'events'
-            #         # kafka_conf:
-            #         #     security.protocol: 'sasl_ssl'
-            #         #     ssl.ca.location: '%kernel.project_dir%/config/kafka/ca.pem'
-            #         #     sasl.username: '%env(KAFKA_SASL_USERNAME)%'
-            #         #     sasl.password: '%env(KAFKA_SASL_PASSWORD)%'
+                    # kafka_conf:
+                    #     security.protocol: 'sasl_ssl'
+                    #     ssl.ca.location: '%kernel.project_dir%/config/kafka/ca.pem'
+                    #     sasl.username: '%env(KAFKA_SASL_USERNAME)%'
+                    #     sasl.password: '%env(KAFKA_SASL_PASSWORD)%'
             #         #     sasl.mechanisms: 'SCRAM-SHA-256'
             # consumer:
             #     dsn: '%env(KAFKA_URL)%'
@@ -48,15 +48,15 @@ framework:
             #         kafka_conf:
             #             enable.auto.offset.store: 'false'
             #             group.id: 'bi-sync' # should be unique per consumer
-            #             # security.protocol: 'sasl_ssl'
-            #             # ssl.ca.location: '%kernel.project_dir%/config/kafka/ca.pem'
-            #             # sasl.username: '%env(KAFKA_SASL_USERNAME)%'
-            #             # sasl.password: '%env(KAFKA_SASL_PASSWORD)%'
-            #             # sasl.mechanisms: 'SCRAM-SHA-256'
-            #             max.poll.interval.ms: '45000'
-            #         topic_conf:
-            #             auto.offset.reset: 'earliest'
+                        # security.protocol: 'sasl_ssl'
+                        # ssl.ca.location: '%kernel.project_dir%/config/kafka/ca.pem'
+                        # sasl.username: '%env(KAFKA_SASL_USERNAME)%'
+                        # sasl.password: '%env(KAFKA_SASL_PASSWORD)%'
+                        # sasl.mechanisms: 'SCRAM-SHA-256'
+                    #     max.poll.interval.ms: '45000'
+                    # topic_conf:
+                    #     auto.offset.reset: 'earliest'
 
-        # routing:
-        #     # Route your messages to the transports
-        #     'App\Domain\Event\ClientCreated': producer
+        routing:
+            # Route your messages to the transports
+            # 'App\Domain\Event\ClientCreated': producer
